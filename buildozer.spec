@@ -1,61 +1,57 @@
 [app]
 
-# (str) Tiêu đề ứng dụng hiển thị trên điện thoại
+# Tên ứng dụng hiển thị trên điện thoại
 title = Tra Cuu Ho So
 
-# (str) Tên gói (viết liền không dấu)
+# Tên package (chữ thường, không dấu, không khoảng trắng)
 package.name = tracuuhoso
 
-# (str) Tên miền gói (định danh ứng dụng)
-package.domain = org.tracuu
+# Domain định danh
+package.domain = org.test
 
-# (str) Thư mục chứa file main.py
+# Thư mục chứa file mã nguồn chính (main.py)
 source.dir = .
 
-# (list) Các định dạng file cần đóng gói vào APK
-source.include_exts = py,png,jpg,kv,atlas,json,txt,db,sqlite3
+# Các phần mở rộng tập tin cần đóng gói
+source.include_exts = py,png,jpg,kv,atlas,json,txt,csv,xlsx
 
-# (str) Phiên bản ứng dụng
+# Phiên bản ứng dụng
 version = 0.1
 
-# (list) Danh sách các thư viện Python cần dùng (cách nhau bởi dấu phẩy)
-# Nếu app có dùng thêm requests, sqlite3,... hãy thêm vào sau: ví dụ python3,kivy,requests
-requirements = python3,kivy
+# Danh sách thư viện cần thiết (Đã khóa phiên bản chuẩn để tránh lỗi C-API)
+requirements = python3==3.11.5,kivy==2.3.0
 
-# (str) Hướng màn hình (portrait: dọc, landscape: ngang)
+# Hướng màn hình (portrait: dọc, landscape: ngang, all: tự xoay)
 orientation = portrait
 
-# (bool) Chế độ toàn màn hình
+# Chế độ toàn màn hình (0: tắt, 1: bật)
 fullscreen = 0
 
-# (list) Quyền ứng dụng (mở ghi chú nếu cần truy cập mạng hoặc bộ nhớ)
-android.permissions = INTERNET
-
-# (int) Target Android API
-android.api = 33
-
-# (int) Minimum API hỗ trợ
-android.minapi = 21
-
-# (str) Phiên bản Android NDK tối ưu cho Python 3.11
-android.ndk = 25b
-
-# (bool) Bỏ qua cập nhật SDK không cần thiết để tiết kiệm thời gian
-android.skip_update = False
-
-# (bool) TỰ ĐỘNG CHẤP NHẬN LICENSE CỦA GOOGLE (Rất quan trọng trên CI/CD GitHub)
-android.accept_sdk_license = True
-
-# (list) Kiến trúc chip hỗ trợ (chọn 2 kiến trúc phổ biến nhất hiện nay)
-android.archs = arm64-v8a, armeabi-v7a
-
-# (bool) Cho phép sao lưu dữ liệu
-android.allow_backup = True
 
 [buildozer]
 
-# (int) Mức độ chi tiết của log (2 là đầy đủ nhất để dễ xem lỗi nếu có)
+# Mức độ chi tiết của log (2 là đầy đủ nhất để kiểm tra khi cần)
 log_level = 2
 
-# (int) Cảnh báo khi chạy quyền root
+# Cảnh báo khi chạy quyền root
 warn_on_root = 1
+
+
+# --- CẤU HÌNH ANDROID ---
+[app:android]
+
+# Phiên bản Android API mục tiêu và tối thiểu
+android.api = 33
+android.minapi = 21
+
+# Phiên bản NDK tương thích ổn định nhất
+android.ndk = 25b
+
+# Tự động đồng ý giấy phép Android SDK (bắt buộc để không bị dừng)
+android.accept_sdk_license = True
+
+# Kiến trúc CPU hỗ trợ cho các dòng máy Android hiện nay
+android.archs = arm64-v8a, armeabi-v7a
+
+# Cho phép ứng dụng truy cập Internet và bộ nhớ (nếu cần)
+android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
