@@ -9,74 +9,23 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout mã nguồn
         uses: actions/checkout@v4
 
-      - name: Cài đặt Java 17
-        uses: actions/setup-java@v4
+      - name: Build ứng dụng với Buildozer Action
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Cài đặt Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Cài đặt các gói phụ thuộc hệ thống
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            build-essential \
-            git \
-            ffmpeg \
-            libffi-dev \
-            libssl-dev \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            cmake \
-            zip \
-            unzip \
-            tar \
-            ccache
-
-      - name: Cài đặt Cython và Buildozer
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install --upgrade Cython==0.29.36 buildozer
-
-      - name: Tự động chấp nhận toàn bộ License của Android SDK
-        run: |
-          # 1. Chấp nhận license trên hệ thống runner
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-          # 2. Tạo sẵn thư mục licenses trong cache của Buildozer để không bao giờ bị hỏi lại
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          cp -r /usr/local/lib/android/sdk/licenses/* ~/.buildozer/android/platform/android-sdk/licenses/ || true
-
-      - name: Build ứng dụng Android với Buildozer
-        env:
-          APP_ANDROID_NDK_VERSION: "25b"
-        run: |
-          # Khóa bản NDK 25b và API 33 tương thích hoàn toàn
-          sed -i 's/^#* *android.ndk *=.*/android.ndk = 25b/' buildozer.spec || true
-          sed -i 's/^#* *android.api *=.*/android.api = 33/' buildozer.spec || true
-          sed -i 's/^#* *android.minapi *=.*/android.minapi = 24/' buildozer.spec || true
-
-          # Dùng yes để tự động đồng ý mọi câu hỏi phát sinh thêm nếu có
-          yes | buildozer -v android debug
+          workdir: .
+          buildozer_version: stable
 
       - name: Lưu trữ file APK (Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: bin/*.apk
+          path: ${{ steps.buildozer.outputs.filename }}
           retention-days: 7
           
