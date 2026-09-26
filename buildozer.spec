@@ -1,59 +1,61 @@
 [app]
 
-# Tên hiển thị của ứng dụng
-title = My Application
+# (str) Tiêu đề ứng dụng hiển thị trên điện thoại
+title = Tra Cuu Ho So
 
-# Tên gói ứng dụng (viết liền không dấu, chữ thường)
-package.name = myapp
+# (str) Tên gói (viết liền không dấu)
+package.name = tracuuhoso
 
-# Định danh domain gói
-package.domain = org.test
+# (str) Tên miền gói (định danh ứng dụng)
+package.domain = org.tracuu
 
-# Thư mục chứa mã nguồn (thường là thư mục hiện tại)
+# (str) Thư mục chứa file main.py
 source.dir = .
 
-# Các định dạng file đưa vào bản build
-source.include_exts = py,png,jpg,kv,atlas,json,txt
+# (list) Các định dạng file cần đóng gói vào APK
+source.include_exts = py,png,jpg,kv,atlas,json,txt,db,sqlite3
 
-# Phiên bản ứng dụng
+# (str) Phiên bản ứng dụng
 version = 0.1
 
-# Danh sách thư viện Python cần thiết (thêm các thư viện khác nếu có dùng)
+# (list) Danh sách các thư viện Python cần dùng (cách nhau bởi dấu phẩy)
+# Nếu app có dùng thêm requests, sqlite3,... hãy thêm vào sau: ví dụ python3,kivy,requests
 requirements = python3,kivy
 
-# Hướng màn hình (all, portrait, landscape, sensorLandscape, ...)
+# (str) Hướng màn hình (portrait: dọc, landscape: ngang)
 orientation = portrait
 
-# Chế độ toàn màn hình (0: hiện thanh thông báo pin/sóng, 1: ẩn)
+# (bool) Chế độ toàn màn hình
 fullscreen = 0
 
-
-# --------------------------------------------------
-# CẤU HÌNH ANDROID (Đã khóa phiên bản chuẩn để không lỗi)
-# --------------------------------------------------
-[buildozer]
-
-# Mức độ chi tiết của log (2 là đầy đủ nhất)
-log_level = 2
-
-# Cảnh báo nếu chạy dưới quyền root
-warn_on_root = 1
-
-
-# Thiết lập SDK / NDK cho Android
-android.api = 33
-android.minapi = 21
-android.ndk = 25b
-android.build_tools_version = 33.0.2
-
-# Tự động đồng ý điều khoản giấy phép của Google SDK
-android.accept_sdk_license = True
-
-# Quyền hạn cơ bản (INTERNET)
+# (list) Quyền ứng dụng (mở ghi chú nếu cần truy cập mạng hoặc bộ nhớ)
 android.permissions = INTERNET
 
-# Kiến trúc CPU xuất ra (chạy tốt trên hầu hết máy Android hiện nay)
+# (int) Target Android API
+android.api = 33
+
+# (int) Minimum API hỗ trợ
+android.minapi = 21
+
+# (str) Phiên bản Android NDK tối ưu cho Python 3.11
+android.ndk = 25b
+
+# (bool) Bỏ qua cập nhật SDK không cần thiết để tiết kiệm thời gian
+android.skip_update = False
+
+# (bool) TỰ ĐỘNG CHẤP NHẬN LICENSE CỦA GOOGLE (Rất quan trọng trên CI/CD GitHub)
+android.accept_sdk_license = True
+
+# (list) Kiến trúc chip hỗ trợ (chọn 2 kiến trúc phổ biến nhất hiện nay)
 android.archs = arm64-v8a, armeabi-v7a
 
-# Tự động tải Android SDK nếu chưa có
-android.skip_update = False
+# (bool) Cho phép sao lưu dữ liệu
+android.allow_backup = True
+
+[buildozer]
+
+# (int) Mức độ chi tiết của log (2 là đầy đủ nhất để dễ xem lỗi nếu có)
+log_level = 2
+
+# (int) Cảnh báo khi chạy quyền root
+warn_on_root = 1
