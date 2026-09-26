@@ -10,22 +10,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
 
     steps:
       - name: Checkout mã nguồn
         uses: actions/checkout@v4
 
-      - name: Build ứng dụng với Buildozer Action
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          workdir: .
-          buildozer_version: stable
+      - name: Chạy Buildozer đóng gói APK
+        run: |
+          # Đồng ý tự động mọi bản quyền và chạy build
+          yes | buildozer -v android debug
 
       - name: Lưu trữ file APK (Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
           retention-days: 7
           
