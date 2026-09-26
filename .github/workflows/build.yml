@@ -9,21 +9,58 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: kivy/buildozer:latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout mã nguồn
         uses: actions/checkout@v4
 
-      - name: Chạy Buildozer đóng gói APK
+      - name: Cài đặt Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cài đặt Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Cài đặt công cụ hệ thống cần thiết
         run: |
-          # Đồng ý tự động mọi bản quyền và chạy build
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential git ffmpeg libffi-dev libssl-dev \
+            autoconf automake libtool pkg-config cmake zip unzip tar ccache
+
+      - name: Cài đặt Cython và Buildozer
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install --upgrade Cython==0.29.36 buildozer
+
+      - name: Chấp nhận toàn bộ giấy phép Android SDK
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      - name: Ép cấu hình API ổn định và chạy Build
+        run: |
+          # 1. Chỉnh sửa triệt để file buildozer.spec: đổi API 36 thành 33, NDK r28c thành 25b
+          sed -i 's/^#* *android.api *=.*/android.api = 33/' buildozer.spec
+          sed -i 's/^#* *android.minapi *=.*/android.minapi = 24/' buildozer.spec
+          sed -i 's/^#* *android.ndk *=.*/android.ndk = 25b/' buildozer.spec
+          sed -i 's/^#* *android.ndk_api *=.*/android.ndk_api = 21/' buildozer.spec
+
+          # 2. Xóa sạch thư mục cache lỗi NDK r28c trước đó nếu có
+          rm -rf ~/.buildozer/android/platform/android-ndk*
+
+          # 3. Kích hoạt build với chế độ đồng ý tự động
           yes | buildozer -v android debug
 
       - name: Lưu trữ file APK (Artifact)
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: app-debug-apk
           path: bin/*.apk
