@@ -50,23 +50,28 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install --upgrade Cython==0.29.36 buildozer
 
-      - name: Chấp nhận giấy phép Android SDK
+      - name: Tự động chấp nhận toàn bộ License của Android SDK
         run: |
+          # 1. Chấp nhận license trên hệ thống runner
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
           yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+          # 2. Tạo sẵn thư mục licenses trong cache của Buildozer để không bao giờ bị hỏi lại
+          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          cp -r /usr/local/lib/android/sdk/licenses/* ~/.buildozer/android/platform/android-sdk/licenses/ || true
 
       - name: Build ứng dụng Android với Buildozer
         env:
           APP_ANDROID_NDK_VERSION: "25b"
         run: |
-          # Khóa bản NDK 25b và API 33 để tương thích với Buildozer
+          # Khóa bản NDK 25b và API 33 tương thích hoàn toàn
           sed -i 's/^#* *android.ndk *=.*/android.ndk = 25b/' buildozer.spec || true
           sed -i 's/^#* *android.api *=.*/android.api = 33/' buildozer.spec || true
           sed -i 's/^#* *android.minapi *=.*/android.minapi = 24/' buildozer.spec || true
-          
-          # Chạy lệnh build
-          buildozer -v android debug
+
+          # Dùng yes để tự động đồng ý mọi câu hỏi phát sinh thêm nếu có
+          yes | buildozer -v android debug
 
       - name: Lưu trữ file APK (Artifact)
         uses: actions/upload-artifact@v4
