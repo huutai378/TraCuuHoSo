@@ -1,57 +1,84 @@
 [app]
 
-# Tên ứng dụng hiển thị trên điện thoại
+# (str) Title of your application
 title = Tra Cuu Ho So
 
-# Tên package (chữ thường, không dấu, không khoảng trắng)
+# (str) Package name
 package.name = tracuuhoso
 
-# Domain định danh
-package.domain = org.test
+# (str) Package domain (needed for android/ios packaging)
+package.domain = org.tracuuhoso
 
-# Thư mục chứa file mã nguồn chính (main.py)
+# (str) Source code where the main.py lives
 source.dir = .
 
-# Các phần mở rộng tập tin cần đóng gói
-source.include_exts = py,png,jpg,kv,atlas,json,txt,csv,xlsx
+# (list) Source files to include (let empty to include all the files)
+source.include_exts = py,png,jpg,kv,atlas,json,txt,csv
 
-# Phiên bản ứng dụng
+# (list) List of inclusions using pattern matching
+#source.include_patterns = assets/*,images/*.png
+
+# (str) Application versioning (method 1)
 version = 0.1
 
-# Danh sách thư viện cần thiết (Đã khóa phiên bản chuẩn để tránh lỗi C-API)
-requirements = python3==3.11.5,kivy==2.3.0
+# (list) Application requirements
+# comma separated e.g. requirements = sqlite3,kivy
+requirements = python3,kivy,urllib3,requests,certifi,charset-normalizer,idna
 
-# Hướng màn hình (portrait: dọc, landscape: ngang, all: tự xoay)
+# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
 
-# Chế độ toàn màn hình (0: tắt, 1: bật)
+# (bool) Indicate if the application should be fullscreen to user
 fullscreen = 0
 
 
-[buildozer]
+#
+# Android specific
+#
 
-# Mức độ chi tiết của log (2 là đầy đủ nhất để kiểm tra khi cần)
-log_level = 2
+# (list) Permissions
+android.permissions = INTERNET,ACCESS_NETWORK_STATE,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 
-# Cảnh báo khi chạy quyền root
-warn_on_root = 1
-
-
-# --- CẤU HÌNH ANDROID ---
-[app:android]
-
-# Phiên bản Android API mục tiêu và tối thiểu
+# (int) Target Android API, should be as high as possible.
 android.api = 33
+
+# (int) Minimum API your APK / AAB will support.
 android.minapi = 21
 
-# Phiên bản NDK tương thích ổn định nhất
+# (str) Android NDK version to use (KHÓA CHUẨN 25b ĐỂ KHÔNG BỊ CRASH DO r28c)
 android.ndk = 25b
 
-# Tự động đồng ý giấy phép Android SDK (bắt buộc để không bị dừng)
+# (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
+android.ndk_api = 21
+
+# (bool) Use --private data storage (True) or --dir public storage (False)
+android.private_storage = True
+
+# (bool) If True, then skip trying to update the Android sdk
+# This can be useful to avoid excess Internet downloads or save time
+# when an update is due and you just want to test/build your package
+android.skip_update = False
+
+# (bool) If True, then automatically accept SDK license
+# agreements. This is intended for automation only.
 android.accept_sdk_license = True
 
-# Kiến trúc CPU hỗ trợ cho các dòng máy Android hiện nay
+# (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
+# Build cho máy Android đời mới và phổ thông
 android.archs = arm64-v8a, armeabi-v7a
 
-# Cho phép ứng dụng truy cập Internet và bộ nhớ (nếu cần)
-android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
+# (bool) enables Android auto backup feature (Android API >=23)
+android.allow_backup = True
+
+
+#
+# Buildozer section
+#
+
+[buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
+log_level = 2
+
+# (int) Display warning if buildozer is run as root (0 = False, 1 = True)
+warn_on_root = 0
